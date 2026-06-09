@@ -1,105 +1,316 @@
-# Automated SSH Brute Force Detection and Response using Splunk & Shuffle SOAR
+# 🚨 Automated SSH Brute Force Detection & Response using Splunk SIEM + Shuffle SOAR
 
-## Overview
+![SIEM](https://img.shields.io/badge/SIEM-Splunk-green)
+![SOAR](https://img.shields.io/badge/SOAR-Shuffle-purple)
+![Platform](https://img.shields.io/badge/Platform-Ubuntu-orange)
+![Status](https://img.shields.io/badge/Status-Completed-success)
+![Security](https://img.shields.io/badge/Domain-Cybersecurity-red)
 
-This project demonstrates an end-to-end Security Operations Center (SOC) use case for detecting and responding to SSH brute-force attacks using Splunk SIEM and Shuffle SOAR.
+---
 
-The solution collects Linux authentication logs, detects suspicious SSH login failures in Splunk, triggers a real-time alert, sends the alert to Shuffle through a webhook, and automatically notifies the security team via email.
+## 📌 Overview
 
-## Architecture
+This project demonstrates a complete **SOC (Security Operations Center)** use case for detecting and responding to SSH brute-force attacks using **Splunk Enterprise** and **Shuffle SOAR**.
 
-Attacker Simulation
+The solution collects Linux authentication logs, detects suspicious SSH login failures in Splunk, generates a real-time alert, triggers a webhook to Shuffle SOAR, and automatically notifies the security team via email.
 
-↓
-Linux Server (auth.log)
+This project showcases how modern SOC teams integrate **SIEM + SOAR** technologies to automate security operations and reduce incident response time.
 
-↓
+---
+
+## 🏗️ Architecture
+
+```text
+Attacker Machine (192.168.0.7)
+            │
+            │ SSH Brute Force Attack
+            ▼
+Target Server (192.168.0.6)
+            │
+            │ /var/log/auth.log
+            ▼
 Splunk Universal Forwarder
-
-↓
-Splunk Enterprise
-
-↓
-Real-Time Alert
-
-↓
+            │
+            ▼
+Splunk Enterprise SIEM
+            │
+            │ Real-Time Alert
+            ▼
 Webhook Action
-
-↓
+            │
+            ▼
 Shuffle SOAR
+            │
+            ▼
+📧 Email Notification
+```
 
-↓
-Email Notification
+---
 
-<img width="1536" height="1024" alt="architecture" src="https://github.com/user-attachments/assets/9a95af90-a6a7-4e3f-915b-ac4aabf7d7d2" />
+## 📸 Architecture Diagram
 
+![Architecture](https://github.com/user-attachments/assets/9a95af90-a6a7-4e3f-915b-ac4aabf7d7d2)
 
+---
 
-## Technologies Used
+# 🎯 Project Objectives
 
-* Splunk Enterprise
-* Splunk Universal Forwarder
-* Shuffle SOAR
-* Linux (Ubuntu)
-* SMTP (Gmail)
-* Docker
-* SSH Authentication Logs
+* Detect SSH brute-force attacks in real time
+* Collect and centralize Linux authentication logs
+* Generate automated SIEM alerts
+* Integrate Splunk with Shuffle SOAR
+* Automate incident notifications
+* Demonstrate a real-world SOC workflow
 
-## Project Workflow
+---
 
-### Step 1: Log Generation
+# 🛠️ Technologies Used
 
-SSH failed authentication attempts are generated on the Linux server.
+| Technology                 | Purpose                  |
+| -------------------------- | ------------------------ |
+| Splunk Enterprise          | Log Analysis & Detection |
+| Splunk Universal Forwarder | Log Collection           |
+| Shuffle SOAR               | Security Automation      |
+| Ubuntu Linux               | Target Environment       |
+| OpenSSH                    | Authentication Service   |
+| Gmail SMTP                 | Email Notification       |
+| Docker                     | Shuffle Deployment       |
+| Hydra                      | Attack Simulation        |
 
-Example log:
+---
 
-Failed password for invalid user testuser from 192.168.x.x
+# 🔄 Workflow
 
-### Step 2: Log Collection
+## Step 1 — Attack Simulation
 
-The Splunk Universal Forwarder collects Linux authentication logs and forwards them to Splunk Enterprise.
+The attacker machine generates multiple SSH login attempts against the target server using Hydra.
 
-### Step 3: Detection
+```bash
+hydra -l testuser -P passwords.txt ssh://192.168.0.6:2232
+```
+
+---
+
+## Step 2 — Log Generation
+
+The target server records failed authentication events inside:
+
+```bash
+/var/log/auth.log
+```
+
+Example Event:
+
+```text
+Failed password for testuser from 192.168.0.7 port 44470 ssh2
+```
+
+---
+
+## Step 3 — Log Collection
+
+Splunk Universal Forwarder continuously monitors:
+
+```bash
+/var/log/auth.log
+```
+
+and forwards events to Splunk Enterprise.
+
+---
+
+## Step 4 — Detection
 
 Splunk continuously monitors authentication logs using a real-time search.
 
 Example SPL Query:
 
+```spl
 index=* "Failed password"
+```
 
-### Step 4: Alert Creation
+---
 
-When failed login attempts are detected, Splunk generates a real-time alert.
+## Step 5 — Alert Generation
 
-### Step 5: SOAR Automation
+When failed login attempts are detected, Splunk generates a real-time security alert.
 
-The alert triggers a webhook that sends data to Shuffle SOAR.
+Alert Type:
 
-### Step 6: Automated Notification
+```text
+Real-Time Alert
+```
 
-Shuffle executes a workflow that automatically sends an email notification to the security team.
+Action:
 
-## Key Features
+```text
+Webhook
+```
 
-* Real-time SSH brute-force detection
-* Automated alert generation
-* SIEM to SOAR integration
-* Email-based incident notification
-* Scalable SOC workflow
+---
 
-## Business Value
+## Step 6 — SOAR Automation
 
-This project reduces incident response time by automating alert handling and notification workflows. Security analysts receive immediate alerts and can investigate suspicious activity faster.
+The Splunk alert sends data to Shuffle through a webhook.
 
-## Future Enhancements
+Shuffle Workflow:
 
-* Automatic attacker IP blocking
-* ServiceNow ticket creation
-* Microsoft Teams / Slack notifications
-* Threat intelligence enrichment
-* Endpoint isolation
-* Firewall integration
+```text
+Webhook Trigger
+        ↓
+Alert Processing
+        ↓
+Email Notification
+```
 
-## Outcome
+---
 
-Successfully implemented an automated detection and response pipeline that demonstrates how modern SOC teams integrate SIEM and SOAR platforms for security operations.
+## Step 7 — Automated Email Notification
+
+Shuffle automatically sends an email to the security team containing:
+
+* Alert Name
+* Source IP Address
+* Target Host
+* Severity Level
+* Attack Details
+* Recommended Actions
+
+---
+
+# 🔍 Detection Queries
+
+### Failed SSH Login Detection
+
+```spl
+index=* "Failed password"
+```
+
+### Successful SSH Login Detection
+
+```spl
+index=* "Accepted password"
+```
+
+### Top Source IP Addresses
+
+```spl
+index=* "Failed password"
+| stats count by src_ip
+| sort -count
+```
+
+### Authentication Activity Over Time
+
+```spl
+index=* "Failed password"
+| timechart count
+```
+
+### Failed Login Count by Host
+
+```spl
+index=* "Failed password"
+| stats count by host
+```
+
+---
+
+# 📧 Automated Response
+
+When an SSH brute-force attack is detected:
+
+1. Splunk detects suspicious activity
+2. Real-time alert is generated
+3. Webhook sends alert to Shuffle
+4. Shuffle executes workflow
+5. Email notification is sent automatically
+
+---
+
+# 📊 Screenshots
+
+## Splunk Detection
+
+*Add Screenshot Here*
+
+```text
+screenshots/splunk-detection.png
+```
+
+## Shuffle Workflow
+
+*Add Screenshot Here*
+
+```text
+screenshots/shuffle-workflow.png
+```
+
+## Email Alert
+
+*Add Screenshot Here*
+
+```text
+screenshots/email-alert.png
+```
+
+## Hydra Attack Simulation
+
+*Add Screenshot Here*
+
+```text
+screenshots/hydra-attack.png
+```
+
+---
+
+# 📈 Business Value
+
+This project demonstrates how organizations can:
+
+* Improve threat visibility
+* Reduce incident response time
+* Automate repetitive SOC tasks
+* Minimize manual alert handling
+* Enhance operational efficiency
+
+---
+
+# 🚀 Future Enhancements
+
+* 🔒 Automatic Attacker IP Blocking
+* 🔥 Firewall Integration
+* 🎫 ServiceNow Ticket Creation
+* 💬 Microsoft Teams Notifications
+* 📱 Slack Alerts
+* 🌍 Threat Intelligence Enrichment
+* 🖥️ Endpoint Isolation
+* 📊 Security Dashboard Development
+
+---
+
+# ✅ Project Outcome
+
+Successfully implemented an automated detection and response pipeline that:
+
+✔ Detects SSH brute-force attacks
+
+✔ Generates real-time security alerts
+
+✔ Integrates Splunk SIEM with Shuffle SOAR
+
+✔ Automates incident notifications
+
+✔ Demonstrates practical SOC automation
+
+---
+
+## 👨‍💻 Author
+
+**Zaid Pathan**
+
+Cybersecurity | SOC Analyst | SIEM | SOAR | Threat Detection | Incident Response
+
+---
+
+⭐ If you found this project useful, consider giving it a star.
