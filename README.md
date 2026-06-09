@@ -9,20 +9,30 @@ The solution collects Linux authentication logs, detects suspicious SSH login fa
 ## Architecture
 
 Attacker Simulation
+
 ↓
 Linux Server (auth.log)
+
 ↓
 Splunk Universal Forwarder
+
 ↓
 Splunk Enterprise
+
 ↓
 Real-Time Alert
+
 ↓
 Webhook Action
+
 ↓
 Shuffle SOAR
+
 ↓
 Email Notification
+
+<img width="1919" height="994" alt="image" src="https://github.com/user-attachments/assets/0fd4a5c2-5c64-4942-b24e-bd75178b034c" />
+
 
 ## Technologies Used
 
