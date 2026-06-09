@@ -31,7 +31,8 @@ Shuffle SOAR
 ↓
 Email Notification
 
-<img width="1919" height="994" alt="image" src="https://github.com/user-attachments/assets/0fd4a5c2-5c64-4942-b24e-bd75178b034c" />
+<img width="1536" height="1024" alt="architecture" src="https://github.com/user-attachments/assets/9a95af90-a6a7-4e3f-915b-ac4aabf7d7d2" />
+
 
 
 ## Technologies Used
